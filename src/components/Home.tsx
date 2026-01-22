@@ -25,11 +25,11 @@ function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-lg transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 group">
+            <button className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 sm:hover:from-blue-500 sm:hover:to-purple-500 active:from-blue-500 active:to-purple-500 text-white font-bold text-lg transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 group">
               Find My First Issue
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 sm:group-hover:translate-x-1 group-active:translate-x-1 transition-transform" />
             </button>
-            <button className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gray-800 hover:bg-gray-750 text-gray-200 font-medium text-lg border border-white/5 hover:border-white/10 transition-all flex items-center justify-center gap-2">
+            <button className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gray-800 hover:bg-gray-750 text-gray-200 font-medium text-lg border border-white/5 sm:hover:border-white/10 active:border-white/10 sm:hover:bg-gray-700 active:bg-gray-700 hover:text-white transition-all flex items-center justify-center gap-2">
               <Github className="w-5 h-5" />
               View on GitHub
             </button>
