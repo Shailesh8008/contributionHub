@@ -35,7 +35,7 @@ function Home() {
               <ArrowRight className="w-5 h-5 sm:group-hover:translate-x-1 group-active:translate-x-1 transition-transform" />
             </button>
             <button
-              onClick={(e) =>
+              onClick={() =>
                 window.open("https://github.com/Shailesh8008/contributionHub")
               }
               className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gray-800 hover:bg-gray-750 text-gray-200 font-medium text-lg border border-white/5 sm:hover:border-white/10 active:border-white/10 sm:hover:bg-gray-700 active:bg-gray-700 hover:text-white transition-all flex items-center justify-center gap-2"
