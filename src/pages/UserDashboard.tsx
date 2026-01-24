@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  User,
   Github,
   Mail,
   MapPin,
@@ -9,7 +8,6 @@ import {
   BookOpen,
   ArrowRight,
   LogOut,
-  Bookmark,
 } from "lucide-react";
 import Modal from "../components/Modal";
 

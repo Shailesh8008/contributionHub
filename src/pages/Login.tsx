@@ -1,8 +1,6 @@
 import { Github, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 px-4 py-8">
