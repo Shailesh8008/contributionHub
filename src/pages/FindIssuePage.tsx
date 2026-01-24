@@ -51,7 +51,9 @@ export default function FindIssuePage() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch("http://localhost:5000/api/issues");
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/issues`,
+        );
         if (!response.ok) {
           throw new Error(`Failed to fetch issues: ${response.statusText}`);
         }
@@ -76,10 +78,13 @@ export default function FindIssuePage() {
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/bookmarks", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/bookmarks`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
         if (response.ok) {
           const data = await response.json();
           setBookmarkedIssues(
@@ -98,10 +103,13 @@ export default function FindIssuePage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/user", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/user`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
         if (response.ok) {
           const data = await response.json();
           setUser(data.user || null);
@@ -236,7 +244,7 @@ export default function FindIssuePage() {
       if (isBookmarked) {
         // Remove bookmark
         const response = await fetch(
-          `http://localhost:5000/api/bookmarks/${issueId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/bookmarks/${issueId}`,
           {
             method: "DELETE",
             credentials: "include",
@@ -251,14 +259,17 @@ export default function FindIssuePage() {
         setBookmarkedIssues(newBookmarks);
       } else {
         // Add bookmark
-        const response = await fetch("http://localhost:5000/api/bookmarks", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/bookmarks`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ issueId }),
           },
-          body: JSON.stringify({ issueId }),
-        });
+        );
         if (!response.ok) {
           toast.error("Failed to save bookmark");
           return;

@@ -20,7 +20,7 @@ export default function Login() {
           <div className="space-y-4">
             <button
               onClick={() => {
-                window.location.href = "http://localhost:5000/auth/github";
+                window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/github`;
               }}
               className="w-full flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 active:from-blue-500 active:to-purple-500 text-white font-bold text-base sm:text-lg transition-all shadow-lg shadow-blue-500/20 group"
             >

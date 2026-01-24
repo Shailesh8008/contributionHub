@@ -40,10 +40,13 @@ export default function UserDashboard() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch("http://localhost:5000/api/auth/user", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/user`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
@@ -72,7 +75,7 @@ export default function UserDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/api/logout", {
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/logout`, {
         method: "DELETE",
         credentials: "include",
       });

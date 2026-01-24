@@ -40,10 +40,13 @@ export default function BookmarksPage() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch("http://localhost:5000/api/bookmarks", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/bookmarks`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
         if (!response.ok) {
           if (response.status === 401) {
             navigate("/login");
@@ -143,7 +146,7 @@ export default function BookmarksPage() {
   const removeBookmark = async (issueId: number) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/bookmarks/${issueId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/bookmarks/${issueId}`,
         {
           method: "DELETE",
           credentials: "include",

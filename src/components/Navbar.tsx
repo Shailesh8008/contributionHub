@@ -12,7 +12,7 @@ function Navbar() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/user", {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
       method: "GET",
       credentials: "include",
     })
@@ -25,7 +25,7 @@ function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    fetch("http://localhost:5000/api/logout", {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/logout`, {
       method: "DELETE",
       credentials: "include",
     })
