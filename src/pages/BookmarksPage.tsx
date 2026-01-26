@@ -7,6 +7,7 @@ import {
   Filter,
   ChevronDown,
   BookmarkX,
+  Star,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useScreenWidth from "../hooks/useScreenWidth";
@@ -19,6 +20,8 @@ interface Issue {
   difficulty: "beginner" | "intermediate" | "unkown";
   comments: number;
   url: string;
+  stars: number;
+  language: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +34,10 @@ export default function BookmarksPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [showDifficultyDropdown, setShowDifficultyDropdown] = useState(false);
+  const [sortBy, setSortBy] = useState<string>("comments-high");
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   const ITEMS_PER_PAGE = 10;
@@ -71,12 +78,52 @@ export default function BookmarksPage() {
 
   const difficulties = ["all", "beginner", "intermediate", "unkown"];
 
+  // Get unique languages from issues
+  const languages = useMemo(() => {
+    const langs = new Set<string>();
+    bookmarks.forEach((issue) => {
+      if (issue.language) {
+        langs.add(issue.language);
+      }
+    });
+    return ["all", ...Array.from(langs).sort()];
+  }, [bookmarks]);
+
   const filteredBookmarks = useMemo(() => {
-    return bookmarks.filter(
-      (issue) =>
-        selectedDifficulty === "all" || issue.difficulty === selectedDifficulty,
-    );
-  }, [bookmarks, selectedDifficulty]);
+    let filtered = bookmarks.filter((issue) => {
+      const matchesDifficulty =
+        selectedDifficulty === "all" || issue.difficulty === selectedDifficulty;
+      const matchesLanguage =
+        selectedLanguage === "all" || issue.language === selectedLanguage;
+
+      return matchesDifficulty && matchesLanguage;
+    });
+
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case "comments-high":
+          return b.comments - a.comments;
+        case "comments-low":
+          return a.comments - b.comments;
+        case "newest":
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case "oldest":
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        case "stars-high":
+          return b.stars - a.stars;
+        case "stars-low":
+          return a.stars - b.stars;
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [bookmarks, selectedDifficulty, selectedLanguage, sortBy]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -180,8 +227,9 @@ export default function BookmarksPage() {
         </div>
 
         {/* Filters */}
-        <div className="mb-8">
-          <div className="relative w-full sm:w-48">
+        <div className="mb-8 flex flex-col sm:flex-row gap-4">
+          {/* Difficulty Filter */}
+          <div className="relative">
             <button
               onClick={() => setShowDifficultyDropdown(!showDifficultyDropdown)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-300 transition-colors w-full"
@@ -208,6 +256,137 @@ export default function BookmarksPage() {
                     {diff}
                   </button>
                 ))}
+              </div>
+            )}
+          </div>
+
+          {/* language filter */}
+          <div className="relative">
+            <button
+              onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-300 transition-colors w-full sm:w-auto"
+            >
+              <Filter className="w-4 h-4" />
+              Language: {selectedLanguage}
+              <ChevronDown className="w-4 h-4 ml-auto" />
+            </button>
+            {showLanguageDropdown && (
+              <div className="absolute top-full left-0 mt-2 w-full sm:w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-20 max-h-60 overflow-y-auto">
+                {languages.map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => {
+                      setSelectedLanguage(lang);
+                      setShowLanguageDropdown(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors capitalize ${
+                      selectedLanguage === lang
+                        ? "bg-blue-500/20 text-blue-400"
+                        : ""
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Sort */}
+          <div className="relative">
+            <button
+              onClick={() => setShowSortDropdown(!showSortDropdown)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-300 transition-colors w-full sm:w-auto"
+            >
+              <Filter className="w-4 h-4" />
+              Sort:{" "}
+              {sortBy === "comments-high"
+                ? "Comments (High)"
+                : sortBy === "comments-low"
+                  ? "Comments (Low)"
+                  : sortBy === "newest"
+                    ? "Newest"
+                    : sortBy === "oldest"
+                      ? "Oldest"
+                      : sortBy === "stars-high"
+                        ? "Stars (High)"
+                        : "Stars (Low)"}
+              <ChevronDown className="w-4 h-4 ml-auto" />
+            </button>
+            {showSortDropdown && (
+              <div className="absolute top-full left-0 mt-2 w-full sm:w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-10">
+                <button
+                  onClick={() => {
+                    setSortBy("comments-high");
+                    setShowSortDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors ${
+                    sortBy === "comments-high"
+                      ? "bg-blue-500/20 text-blue-400"
+                      : ""
+                  }`}
+                >
+                  Comments (High to Low)
+                </button>
+                <button
+                  onClick={() => {
+                    setSortBy("comments-low");
+                    setShowSortDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors ${
+                    sortBy === "comments-low"
+                      ? "bg-blue-500/20 text-blue-400"
+                      : ""
+                  }`}
+                >
+                  Comments (Low to High)
+                </button>
+                <button
+                  onClick={() => {
+                    setSortBy("newest");
+                    setShowSortDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors ${
+                    sortBy === "newest" ? "bg-blue-500/20 text-blue-400" : ""
+                  }`}
+                >
+                  Newest
+                </button>
+                <button
+                  onClick={() => {
+                    setSortBy("oldest");
+                    setShowSortDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors ${
+                    sortBy === "oldest" ? "bg-blue-500/20 text-blue-400" : ""
+                  }`}
+                >
+                  Oldest
+                </button>
+                <button
+                  onClick={() => {
+                    setSortBy("stars-high");
+                    setShowSortDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors ${
+                    sortBy === "stars-high"
+                      ? "bg-blue-500/20 text-blue-400"
+                      : ""
+                  }`}
+                >
+                  Stars (High to Low)
+                </button>
+                <button
+                  onClick={() => {
+                    setSortBy("stars-low");
+                    setShowSortDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors ${
+                    sortBy === "stars-low" ? "bg-blue-500/20 text-blue-400" : ""
+                  }`}
+                >
+                  Stars (Low to High)
+                </button>
               </div>
             )}
           </div>
@@ -272,9 +451,18 @@ export default function BookmarksPage() {
 
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4" />
+                        <span>{issue.stars}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
                         <MessageCircle className="w-4 h-4" />
                         <span>{issue.comments}</span>
                       </div>
+                      {issue.language && (
+                        <span className="px-2 py-1 rounded-full bg-purple-500/10 text-purple-500 border border-purple-500/20 text-xs">
+                          {issue.language}
+                        </span>
+                      )}
                       <span className="px-2 py-1 rounded bg-gray-700/50 text-gray-400">
                         {issue.repo}
                       </span>
