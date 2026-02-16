@@ -1,8 +1,66 @@
 import { Github, ArrowRight, Cpu, TrendingUp, Code2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+function formatCount(count: number) {
+  if (count < 10) return count.toString();
+
+  const power = Math.floor(Math.log10(count));
+  const base = Math.pow(10, power);
+
+  const rounded = Math.floor(count / base) * base;
+
+  // Format with commas
+  return rounded.toLocaleString() + "+";
+}
 
 function Home() {
   const navigate = useNavigate();
+  const [issueCount, setIssueCount] = useState<number | null>(null);
+  const [displayCount, setDisplayCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchIssues = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/issues`,
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.issues && Array.isArray(data.issues)) {
+            setIssueCount(data.issues.length);
+          } else {
+            setIssueCount(0);
+          }
+        } else {
+          setIssueCount(0); // Fallback to 0 on non-ok response
+        }
+      } catch (error) {
+        console.error("Error fetching issue count:", error);
+        setIssueCount(0); // Fallback to 0 on error
+      }
+    };
+
+    fetchIssues();
+  }, []);
+
+  useEffect(() => {
+    if (issueCount !== null) {
+      // If we have the real count, jump to it immediately (or animate to it if desired, but request implies stop fake)
+      setDisplayCount(issueCount);
+      return;
+    }
+
+    // Fake animation loop
+    const interval = setInterval(() => {
+      setDisplayCount((prev) => {
+        if (prev >= 1000) return 1000;
+        return prev + 1;
+      });
+    });
+    return () => clearInterval(interval);
+  }, [issueCount]);
+
   return (
     <main className="flex-grow pt-32 pb-20">
       <section className="max-w-7xl mx-auto px-6 mb-24">
@@ -12,7 +70,8 @@ function Home() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
             </span>
-            Now indexing 1,000+ open source issues
+            Now indexing {issueCount ? formatCount(displayCount) : displayCount}{" "}
+            open source issues
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight">
